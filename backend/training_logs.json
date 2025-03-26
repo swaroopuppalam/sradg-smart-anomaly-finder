@@ -1,0 +1,94 @@
+[
+  {
+    "timestamp": "2025-03-22 05:34:54",
+    "accuracy": 0.6521739130434783
+  },
+  {
+    "timestamp": "2025-03-22 06:14:29",
+    "accuracy": 0.7222222222222222,
+    "precision_0": 0.25,
+    "recall_0": 0.333,
+    "precision_1": 0.857,
+    "recall_1": 0.8
+  },
+  {
+    "timestamp": "2025-03-22 06:28:28",
+    "accuracy": 1.0,
+    "precision_0": 1.0,
+    "recall_0": 1.0,
+    "precision_1": 1.0,
+    "recall_1": 1.0
+  },
+  {
+    "timestamp": "2025-03-22 06:31:38",
+    "accuracy": 1.0,
+    "precision_0": 1.0,
+    "recall_0": 1.0,
+    "precision_1": 1.0,
+    "recall_1": 1.0
+  },
+  {
+    "timestamp": "2025-03-22 06:40:41",
+    "accuracy": 1.0,
+    "precision_0": 1.0,
+    "recall_0": 1.0,
+    "precision_1": 1.0,
+    "recall_1": 1.0
+  },
+  {
+    "timestamp": "2025-03-22 06:51:24",
+    "accuracy": 0.852,
+    "precision_0": 1.0,
+    "recall_0": 0.733,
+    "precision_1": 0.75,
+    "recall_1": 1.0
+  },
+  {
+    "timestamp": "2025-03-22 06:51:48",
+    "accuracy": 0.833,
+    "precision_0": 1.0,
+    "recall_0": 0.75,
+    "precision_1": 0.667,
+    "recall_1": 1.0
+  },
+  {
+    "timestamp": "2025-03-22 06:59:14",
+    "accuracy": 0.833,
+    "precision_0": 1.0,
+    "recall_0": 0.75,
+    "precision_1": 0.667,
+    "recall_1": 1.0
+  },
+  {
+    "timestamp": "2025-03-22 07:05:23",
+    "accuracy": 0.667,
+    "precision_0": 1.0,
+    "recall_0": 0.5,
+    "precision_1": 0.5,
+    "recall_1": 1.0
+  },
+  {
+    "timestamp": "2025-03-22 17:36:00",
+    "accuracy": 0.769,
+    "precision_0": 0.714,
+    "recall_0": 0.556,
+    "precision_1": 0.789,
+    "recall_1": 0.882
+  },
+  {
+    "timestamp": "2025-03-22 17:37:47",
+    "accuracy": 0.769,
+    "precision_0": 0.714,
+    "recall_0": 0.556,
+    "precision_1": 0.789,
+    "recall_1": 0.882
+  },
+  {
+    "timestamp": "2025-03-22 17:39:43",
+    "accuracy": 0.769,
+    "precision_0": 0.714,
+    "recall_0": 0.556,
+    "precision_1": 0.789,
+    "recall_1": 0.882
+  }
+]

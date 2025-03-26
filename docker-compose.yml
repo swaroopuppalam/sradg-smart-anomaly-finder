@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./ui:/ui
+      - ./ml:/ml
+      - shared-data:/shared
+      - ./models:/models
+    restart: always
+
+  ui:
+    build: ./ui
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+    volumes:
+      - ./ui:/ui
+      - ./ml:/ml
+      - shared-data:/shared
+    restart: always
+volumes:
+  shared-data:
