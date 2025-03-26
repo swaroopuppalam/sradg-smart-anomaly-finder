@@ -8,6 +8,8 @@ import time
 from typing import Dict
 import traceback
 
+from utils.root_cause_llm import suggest_root_cause  # ✅ NEW import for LLM fallback
+
 app = FastAPI()
 
 # --------------------------
@@ -21,6 +23,8 @@ CONFIG_PATH = "/ml/config.json"
 TRAINING_LOGS_PATH = "/shared/training_logs.json"
 UPLOAD_DIR = "/ml/uploads"
 AGENT_LOG_PATH = "/shared/agent_log.json"
+EXPLANATION_MAP_PATH = "/shared/explanation_map.json"
+EXPLANATION_FEATURES_PATH = "/shared/explanation_features.json"
 
 os.makedirs(MODEL_DIR, exist_ok=True)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -63,7 +67,6 @@ def load_thresholds():
 def find_best_explanation(input_values, explanation_map, tolerance=0.05):
     if not explanation_map:
         return "No explanation available"
-
     best_match = None
     best_diff = float("inf")
     for key_str, reason in explanation_map.items():
@@ -71,16 +74,13 @@ def find_best_explanation(input_values, explanation_map, tolerance=0.05):
             key_tuple = eval(key_str)
             if len(key_tuple) != len(input_values):
                 continue
-
             diffs = [abs(float(kv) - float(iv)) for kv, iv in zip(key_tuple, input_values)]
             avg_diff = sum(diffs) / len(diffs)
-
             if all(d <= tolerance for d in diffs) and avg_diff < best_diff:
                 best_diff = avg_diff
                 best_match = reason
         except:
             continue
-
     return best_match if best_match else "No matching explanation found — model decision"
 
 # --------------------------
@@ -122,15 +122,26 @@ def detect_anomaly(input_data: Dict[str, float]):
         explanation.append("🧠 Prediction based on ML model")
 
         try:
-            with open("/shared/explanation_map.json") as f:
+            with open(EXPLANATION_MAP_PATH) as f:
                 exp_map = json.load(f)
-            with open("/shared/explanation_features.json") as f:
+            with open(EXPLANATION_FEATURES_PATH) as f:
                 key_features = json.load(f)
             rounded_input = [round(float(df[col].iloc[0]), 3) for col in key_features if col in df.columns]
             lookup_key = str(tuple(rounded_input))
+
             reason = exp_map.get(lookup_key)
+
             if not reason:
                 reason = find_best_explanation(rounded_input, exp_map)
+
+            if not reason or "model decision" in reason:
+                # ✅ Fallback to LLM-based explanation
+                reason = suggest_root_cause(input_data)
+                exp_map[lookup_key] = reason
+                with open(EXPLANATION_MAP_PATH, "w") as f:
+                    json.dump(exp_map, f, indent=2)
+                print(f"🧠 LLM explanation generated and saved for {lookup_key}")
+
             explanation.append(f"📂 Reason Bucket: {reason}")
 
             if pred == 1 and reason != "Unknown Reason":
@@ -226,7 +237,7 @@ def get_training_logs():
     return {"logs": []}
 
 # --------------------------
-# 🔹 Get Agent Logs (with fallback)
+# 🔹 Get Agent Logs
 # --------------------------
 @app.get("/agent_logs/")
 def get_agent_logs():
@@ -235,7 +246,6 @@ def get_agent_logs():
             logs = json.load(f)
             if logs:
                 return {"logs": logs}
-    # fallback: show sample logs to render UI
     return {
         "logs": [
             {
@@ -244,26 +254,12 @@ def get_agent_logs():
                 "anomaly_id": "123456",
                 "status": "submitted",
                 "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
-            },
-            {
-                "action": "Send Email Alert",
-                "reason": "Quantity Mismatch",
-                "anomaly_id": "123456",
-                "status": "sent",
-                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
-            },
-            {
-                "action": "Create Resolution Task",
-                "reason": "Quantity Mismatch",
-                "anomaly_id": "123456",
-                "status": "queued",
-                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
             }
         ]
     }
 
 # --------------------------
-# 🔹 Background Retraining Cycle (Daily)
+# 🔹 Background Retraining
 # --------------------------
 def periodic_retrain():
     while True:

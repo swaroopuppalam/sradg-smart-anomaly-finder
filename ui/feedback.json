@@ -1396,5 +1396,17 @@
       "PRICEDIFFERENCE": 0.0
     },
     "prediction": 0
+  },
+  {
+    "feedback": "Yes",
+    "input": {
+      "Balance Difference": -0.22,
+      "Primary Account": 0,
+      "Secondary Account": 0,
+      "Currency": 0,
+      "QUANTITYDIFFERENCE": 0.0,
+      "PRICEDIFFERENCE": 0.0
+    },
+    "prediction": 0
   }
 ]
